@@ -3,13 +3,13 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { CalendarComponent } from './calendar/calendar.component';
+import { MyCalendarComponent } from './calendar/calendar.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    CalendarComponent
+    MyCalendarComponent
   ],
   imports: [
     BrowserModule,
