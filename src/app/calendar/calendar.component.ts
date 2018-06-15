@@ -12,7 +12,7 @@ interface Film {
         movieNm: String,
         movieNmEn: String,
         prdtYear: Number,
-        openDt: Number,
+        openDt: String,
         typeNm: String,
         prdtStatNm: String,
         nationAlt: String,
@@ -30,10 +30,11 @@ interface Film {
   styleUrls: ['./calendar.component.scss']
 })
 
-export class CalendarComponent implements OnInit {
+export class MyCalendarComponent implements OnInit {
   filmList: Array<any>;
   result: Array<any>;
-  constructor(public http: HttpClient) { }
+  loading = true;
+  constructor(public http: HttpClient) {}
 
   getFilmList() {
     const params = new HttpParams()
@@ -47,22 +48,67 @@ export class CalendarComponent implements OnInit {
     this.http
       .get<Film>('http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json', { params })
       .subscribe(res => {
-          this.filmList = res.movieListResult.movieList.map(film => {
+          this.filmList = res.movieListResult.movieList.filter(film => film.repGenreNm !== '성인물(에로)').map(film => {
+            const year = film.openDt.slice(0, 4);
+            const month = film.openDt.slice(4, 6);
+            const day = film.openDt.slice(6, 8);
+            const date = [year, '-', month, '-', day].join('');
             return {
-              openDate: film.openDt,
-              movName: film.movieNm
+              start: date,
+              title: film.movieNm,
             };
           });
+          console.log(this.filmList);
+          this.loading = false;
+          const thisMonth = new Date().toISOString().substring(5, 7);
+          this.getMonthView(thisMonth);
       });
   }
-  ngOnInit() {
-    this.getFilmList()
-  }
-
-  getMonthView(month: number) {
+  getMonthView(month: String) {
     this.result = this.filmList.filter(film => {
-      return month === film.openDate.slice(4, 6);
+      return month === film.start.slice(5, 7);
     });
+    this.result.sort((a, b) => {
+      const A = parseInt(a.start.slice(8, 10), 10);
+      const B = parseInt(b.start.slice(8, 10), 10);
+      return (A > B) ? 1 : (A < B) ? - 1 : 0;
+    });
+    this.result = this.removeOverlap(this.result);
+
   }
 
+  getDay(date: String): String {
+    const year = date.slice(0, 4);
+    const month = date.slice(5, 7);
+    const day = date.slice(8, 10);
+    const dayList = ['일', '월', '화', '수', '목', '금', '토'];
+    const whatDay = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+    console.log(`date: ${date}, whatDay: ${whatDay.getDay()} year: ${year}, month: ${month}, day: ${day}`);
+    return dayList[whatDay.getDay()];
+  }
+
+  removeOverlap(array: Array<any>) {
+    const openList = [];
+    const startList = [];
+    array.map((film, index) => {
+      if (startList.indexOf(film.start) === -1) {
+        startList.push(film.start);
+        openList.push({
+          start: film.start,
+          title: [film.title],
+        });
+      } else {
+
+        openList[startList.length - 1].title = [...openList[startList.length - 1].title, film.title];
+      }
+    });
+    return openList;
+  }
+
+  getLink(title: String) {
+    return `https://www.justwatch.com/kr/%EA%B2%80%EC%83%89?q=${title}`;
+  }
+  ngOnInit() {
+    this.getFilmList();
+  }
 }
