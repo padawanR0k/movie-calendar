@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-
 interface Film {
   movieListResult: {
     totCnt: Number,
-    source: String,
+    source: string,
     movieList: [
       {
         movieCd: Number,
-        movieNm: String,
-        movieNmEn: String,
+        movieNm: string,
+        movieNmEn: string,
         prdtYear: Number,
-        openDt: String,
-        typeNm: String,
-        prdtStatNm: String,
-        nationAlt: String,
-        genreAlt: String,
-        repNationNm: String,
-        repGenreNm: String,
+        openDt: string,
+        typeNm: string,
+        prdtStatNm: string,
+        nationAlt: string,
+        genreAlt: string,
+        repNationNm: string,
+        repGenreNm: string,
       }
     ]
   };
@@ -64,7 +63,7 @@ export class MyCalendarComponent implements OnInit {
           this.getMonthView(thisMonth);
       });
   }
-  getMonthView(month: String) {
+  getMonthView(month: string) {
     this.result = this.filmList.filter(film => {
       return month === film.start.slice(5, 7);
     });
@@ -77,7 +76,7 @@ export class MyCalendarComponent implements OnInit {
 
   }
 
-  getDay(date: String): String {
+  getDay(date: string): string {
     const year = date.slice(0, 4);
     const month = date.slice(5, 7);
     const day = date.slice(8, 10);
@@ -86,6 +85,14 @@ export class MyCalendarComponent implements OnInit {
     console.log(`date: ${date}, whatDay: ${whatDay.getDay()} year: ${year}, month: ${month}, day: ${day}`);
     return dayList[whatDay.getDay()];
   }
+
+  getGsearchLink(title: string) {
+    return `https://www.google.co.kr/search?q=${title}`;
+  }
+  getYoutubeLink(title: string) {
+    return `https://www.youtube.com/results?search_query=${title}`;
+  }
+
 
   removeOverlap(array: Array<any>) {
     const openList = [];
@@ -103,10 +110,6 @@ export class MyCalendarComponent implements OnInit {
       }
     });
     return openList;
-  }
-
-  getLink(title: String) {
-    return `https://www.justwatch.com/kr/%EA%B2%80%EC%83%89?q=${title}`;
   }
   ngOnInit() {
     this.getFilmList();

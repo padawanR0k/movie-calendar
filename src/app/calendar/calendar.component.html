@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="row justify-content-md-center">
+  <div class="row justify-content-md-center" *ngIf="!loading">
     <div class="btn btn-group" role="group">
       <button class="btn btn-dark btn-secondary" (click)="getMonthView(i)" *ngFor="let i of ['01','02','03','04','05','06','07','08','09','10','11','12']">
         {{i.indexOf('0') === 0 ? i.slice(1,2) : i }}월
@@ -7,20 +7,24 @@
     </div>
   </div>
   <div class="row justify-content-md-center">
-    <p *ngIf="loading" class="alert alert-primary" role="alert">
+    <p *ngIf="loading" class="alert alert-primary" role="alert" style="margin-top: 25%">
       로딩중...
     </p>
-    <!-- <p *ngIf="result.length === 0" class="alert alert-danger" role="alert">
+    <p *ngIf="result.length === 0" class="alert alert-danger" role="alert">
       아직 kobis 데이터베이스에 정보가 없습니다.
-    </p> -->
+    </p>
     <ul class="list-group">
       <li *ngFor="let film of result" class="list-group-item justify-content-between align-items-center">
         {{film.start[5]}}{{film.start[6]}}월 {{film.start[8]}}{{film.start[9]}}일 ({{getDay(film.start)}})
         <span class="badge badge-primary badge-pill">{{film.title.length}}</span>
         <ul class="list-group inner">
-          <li *ngFor="let title of film.title" class="list-group-item">
-            <a [attr.href]="getLink(title)">
-              {{title}}
+          <li *ngFor="let title of film.title" class="list-group-item list-group-item-action">
+            {{title}}
+            <a class="badge badge-danger" [attr.href]="getYoutubeLink(title)" target="_blank">
+              예고편
+            </a>
+            <a class="badge badge-primary" [attr.href]="getGsearchLink(title)" target="_blank">
+              구글링
             </a>
           </li>
         </ul>
