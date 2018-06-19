@@ -45,7 +45,7 @@ export class MyCalendarComponent implements OnInit {
       )
       .set('key', 'db372cfbe5c5f2db5e92aed3ff92f3cb');
     this.http
-      .get<Film>('http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json', { params })
+      .get<Film>('https://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json', { params })
       .subscribe(res => {
           this.filmList = res.movieListResult.movieList.filter(film => film.repGenreNm !== '성인물(에로)').map(film => {
             const year = film.openDt.slice(0, 4);
