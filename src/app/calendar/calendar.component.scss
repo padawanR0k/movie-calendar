@@ -1,0 +1,13 @@
+.btn-group {
+    margin: 0 auto;
+}
+@media (max-width: 786px) {
+
+    .row  > .list-group {
+        width: 90%;
+        margin: 0 auto;
+    }
+    [role="alert"] {
+        margin: 0 auto;
+    }
+}

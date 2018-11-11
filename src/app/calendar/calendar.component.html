@@ -1,8 +1,8 @@
 <div class="container">
   <div class="row justify-content-md-center" *ngIf="!loading">
     <div class="btn btn-group" role="group">
-      <button class="btn btn-dark btn-secondary" (click)="getMonthView(i)" *ngFor="let i of ['01','02','03','04','05','06','07','08','09','10','11','12']">
-        {{i.indexOf('0') === 0 ? i.slice(1,2) : i }}월
+      <button class="btn btn-dark btn-secondary" (click)="getMonthView(i)" *ngFor="let i of getRecentMonth()">
+        {{i}}월
       </button>
     </div>
   </div>

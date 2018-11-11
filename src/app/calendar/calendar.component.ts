@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-
+import { key } from '../../environments/environment.prod';
 interface Film {
   movieListResult: {
     totCnt: Number,
@@ -38,25 +38,36 @@ export class MyCalendarComponent implements OnInit {
   getFilmList() {
     const params = new HttpParams()
       .set(
-        'openStartDt', '2018'
+        'openStartDt', new Date().getFullYear().toString()
       )
       .set(
-        'itemPerPage', '1000'
+        'itemPerPage', '100'
       )
-      .set('key', 'db372cfbe5c5f2db5e92aed3ff92f3cb');
+      .set('key', key);
     this.http
       .get<Film>('https://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json', { params })
       .subscribe(res => {
-          this.filmList = res.movieListResult.movieList.filter(film => film.repGenreNm !== '성인물(에로)').map(film => {
-            const year = film.openDt.slice(0, 4);
-            const month = film.openDt.slice(4, 6);
-            const day = film.openDt.slice(6, 8);
-            const date = [year, '-', month, '-', day].join('');
-            return {
-              start: date,
-              title: film.movieNm,
-            };
-          });
+          this.filmList = res.movieListResult.movieList
+                                                      .filter(film => {
+                                                        return !(film.repGenreNm === '성인물(에로)' ||
+                                                               film.movieNm.indexOf('무삭제') !== -1 ||
+                                                               film.movieNm.indexOf('처제') !== -1 ||
+                                                               film.movieNm.indexOf('거유') !== -1 ||
+                                                               film.movieNm.indexOf('친구 엄마') !== -1 ||
+                                                               film.movieNm.indexOf('친구엄마') !== -1 ||
+                                                               film.movieNm.indexOf('야한') !== -1);
+                                                      })
+                                                      .map(film => {
+                                                        const openingDate = film.openDt;
+                                                        const year = openingDate.slice(0, 4);
+                                                        const month = openingDate.slice(4, 6);
+                                                        const day = openingDate.slice(6, 8);
+                                                        const date = `${year}-${month}-${day}`;
+                                                        return {
+                                                          start: date,
+                                                          title: film.movieNm,
+                                                        };
+                                                      });
           console.log(this.filmList);
           this.loading = false;
           const thisMonth = new Date().toISOString().substring(5, 7);
@@ -76,6 +87,17 @@ export class MyCalendarComponent implements OnInit {
 
   }
 
+  getRecentMonth(): any[] {
+    const currentMoneth = new Date().getMonth() + 1;
+    let monthArr = [];
+    for (let i = currentMoneth; i < currentMoneth + 3; i++) {
+      let month = (i > 12 ? (i - 12) : i).toString();
+      month = month.length === 1 ? '0' + month : month;
+      monthArr = [...monthArr, month];
+    }
+    return monthArr;
+  }
+
   getDay(date: string): string {
     const year = date.slice(0, 4);
     const month = date.slice(5, 7);
@@ -92,7 +114,6 @@ export class MyCalendarComponent implements OnInit {
   getYoutubeLink(title: string) {
     return `https://www.youtube.com/results?search_query=${title}`;
   }
-
 
   removeOverlap(array: Array<any>) {
     const openList = [];
